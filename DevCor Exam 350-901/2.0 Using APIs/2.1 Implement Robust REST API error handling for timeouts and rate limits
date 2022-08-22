@@ -1,0 +1,34 @@
+# REST API Error Handling
+
+There are several different errors you have to look out for when dealing with APIs. With REST APIs that leveral HTTP as its transport, the API will respond with an HTTP error code when a problem occurs. There are several different error codes but most APIs only implement about 10 and the rest are largely unused. 
+
+The error codes are grouped into different categories that helps identify what the cause of the issue. The top level code will be the most generic while sub codes will be more specific. For example:
+
+1XX - Information Codes
+	100 - Continue
+	101 - Switching protocols
+	102 - Processing
+	103 - Early hints
+2XX - Success Codes
+	200 - OK
+3XX - Redirects
+	301 - Moved Permanently
+	304 - Not modified
+4XX - Client error
+	400 - Bad Request
+	401 - Unauthorized
+	403 - Forbidden
+	404 - Not Found
+	429 - Too Many Requests
+5XX - Server error
+	500 - Internal Server Error
+	501 - Not implemented
+	502 - Bad Gateway
+	503 - Service unavailable
+	504 - Gateway Timeout
+	
+Each of these codes tell you something about your request and what may or may not have happened to it. Whether it was successful or not. Most of them, however, either indicate that your request is correctly formatted or not. If it is not, then you have to correct your code. Pure and simple. Such as forbidden, bad request, unauthorized, etc. Fix what the issue is and move on. Others, however, such as too many requests, require you to write your code in such a way that it can work around the error code or with the error code. For example, configuring retries after certain intervals with exponential backoff timers. 
+
+Also, it's important to remember that somethings things just fail for some unknown reason such as a network issue. Retries can help workaround this random issues as well without having to know much more about the network the application is riding on. 
+
+In ansible, you can use the retry feature available to most ansible tasks with the until keyword. In python you can use a while loop with tries, timeouts, and attempts as variable that increment and retry until the number of attempts is reached. 

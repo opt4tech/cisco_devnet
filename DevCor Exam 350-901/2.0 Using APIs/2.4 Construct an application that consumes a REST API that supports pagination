@@ -1,0 +1,19 @@
+# HTTP Pagination for REST APIs
+
+Pagination is necessary when you make a query for information from an API that has so many records that it would have an impact on performance to return them all at once. Performance in system resources or network bandwidth. In those cases, APIs will implement pagination or return the results in "pages" and the constructer of the API has to know how to recursively request the next page as needed. 
+
+There are two methods of pagination, the first is the "Offset/Page"-based pagination. Offset, states which record to start at and how many records to grab. Page calls out a page number to grab and how many entries per page. 
+
+Typically if the offset is not set then it will default to an offset=0, and limit-50. 
+
+While this is very simple, it has its downsides. 
+	- adding or deleting entries between page calls may cause page drift and confusion on where to pick up. Results can easily be skipped. 
+	- it does not work well with large offset values. 
+
+The second method of API pagination is the cursoe- or keyset-based method. The method uses a key value to indicate the starting position. Key values are based on the results of the previous page. Keys depend on specific API implementations. For example pagination with Webex could be based on a message id (give me all messages before THIS message) or messages before a certain date.
+
+You can take the responses and build your own links to each page manually. Where you are at, the previous page, the next page, etc.. but some APIs respond with all of that information in the HTTP Link header. The link header is used by websites to provide references to additional information at specific URLS. They are links to different pages. Typically in the following format:
+Link: <https://awesomenessethanussite.awesome/events?offset=100&limit=50>; rel="self",
+ <https://awesomenessethanussite.awesome/events?offset=50&limit=50>; rel="prev",
+
+As you can see the rel keyword is used to describe the relationship to where you are at. ie. self. 

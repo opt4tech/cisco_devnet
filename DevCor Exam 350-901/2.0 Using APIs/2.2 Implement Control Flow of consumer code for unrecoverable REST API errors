@@ -1,0 +1,12 @@
+# Recovering from HTTP Errors
+
+As I noted in section 2.1 there are recoverable and non-recoverable errors. I think of unrecoverable errors as issues that require user intervention to resolve. Recoverable errors should be manageable through code and not require user input. 
+
+Some of examples of unrecoverable errors are:
+	- 400 bad request just simply means that the request was invalid. Unless you are dealing with an api with different version and one version requires a certain request while the other another, maybe you could use this message to recover. Probably a better way to deal with that issue though. 
+	- 401 Unauthorized: Authentication is required. Fix your auth. * might be able to recover with network based auth if you try local account after an ad account??
+	- 403 Forbidden: Fix your permissions
+Some examples of recoverable errors are:
+	- 405 Method not allowed: incorrect method was used for accessing resource, must include a list of valid methods through the http "Allow" header. 
+	- 408 timeout: Indicates a timeout, try again
+429 too many requests: implement retry after timers

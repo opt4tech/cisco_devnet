@@ -1,0 +1,37 @@
+# HTTP Cache Controls with REST APIs
+
+Caching is a relatively simple concept but implementing it in such a way that it is efficient and elegant for an application takes some thought and consideration. 
+
+There are a few different options to consider. First the http methods from http 1.1. These headers are expires, and pragma. The only option available for pragma now is the no-cache option and is often implemented for backward compatibility. Expires is also an old header that is simply a basic date-timestamp. 
+
+Next we have the cache control headers that are now in use. cache -control has several options that can be included in a comma separated list. 
+	1. public vs private: this defines whether something can be cached by everything (proxies, etc) or just by the user. if nothing specified then public is default. Private means it can only be cached by the client.
+	2. no-cache and no-store:  no-store means it cannot be cached anywhere. no-cahce means that the content can be cached but must require validation. 
+	3. max-age: this header value tells the client for how many seconds content can be cached for.
+	4. s-maxage: s stands for shared, same as max-age but for the shared places such as proxies. 
+	5. must-revalidate: never serve the stale content and must validate the content. There are situations where after the max age has expired the client cannot get in contact with the server and without must-revalidate set it will serve the stale content anyway. With this set, it would not do that.
+	6. proxy-revalidate: same as above but for proxies.
+	7. no-transform: this tells any intermediary such as a proxy not to make any modifications whatsoever to the original asset. 
+
+The above headers show how a server tells a client or proxy to cache and for how long, etc., but we have yet to discuss how the client validates whether or not content is still valid after it expires. The first method for doing this is something called e-tags(entity-tags). These are unique identifiers of the content that represent the content in short form. The client simply needs to send a message to the server asking whether or not that e-tag is still valid. It does this using If-None-Match. The server then can respond with the new content or no, or 304 Not Modified. 
+
+Two types of e-tags:
+	1. Strong - guarantees that two resources are identical
+	2. Week - two versions of the document are considered close enough. 
+
+The other method uses the Last-Modified header. The last modified header shows a data-time of when the content was last updated on the client. The client can then send the If-Modified-Since header with that date to which the server can respond with the content or with a 304 Not-Modified.
+
+What if both the Etag and Last-Modified are present? The client with send boht the if-none-match and the if-modified-since.
+
+What if none are present? 
+
+The content will simply be requested rather than validated first.
+
+HTTP Conditional Requests
+
+   These are the requests mentioned above that the client makes to see if the content needs to be re-downloaded. The if-none-match for eTag and the if-modified-since for last modified method.
+
+   Interestingly, specific with API calls that perform changes with methods such as PUT and DELETE. This headers can be used. Since these are considered unsafe methods because they can change or remove resources, the server will only complete the request if something actually needs to change, otherwise it will respond with a different error message: HTTP 412 Precondition Failed.
+
+   HTTP Compression is another method used to save on bandwidth and thus improving performance. To use this, the client will include a HTTP "Accept Encoding" header with the compression algorithms that it supports. The server can honor that if it supports one that the client accepts or it can ignore it. If it accepts it will include a HTTP "Content-Encoding" http header. 
+
