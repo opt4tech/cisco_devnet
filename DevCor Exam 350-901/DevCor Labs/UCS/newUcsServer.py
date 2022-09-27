@@ -1,6 +1,6 @@
-import os
 import requests
 import xmltodict
+from parameters import NewUcsServer
 
 class UCS_API:
     def __init__(self, host, username, password):
@@ -54,14 +54,14 @@ class UCS_API:
 
 if __name__ == "__main__":
 
-    UCS_HOST = os.environ.get('UCS_HOST', '10.10.20.40')
-    UCS_USER = os.environ.get('UCS_USER', 'ucspe')
-    UCS_PASS = os.environ.get('UCS_HOST', 'ucspe')
+    UCS_HOST = NewUcsServer['HOST']
+    UCS_USER = NewUcsServer['USER']
+    UCS_PASS = NewUcsServer['PASS']
     ucs = UCS_API(UCS_HOST, UCS_USER, UCS_PASS)
 
     # supply template and target instance names
-    template = "DevNet_ServiceProfile_Template"
-    name = "DevNet_ServiceProfile_Instance"
+    template = NewUcsServer['TEMPLATE']
+    name = NewUcsServer['NAME']
 
     response = ucs.create_server_from_profile (name, template)
 

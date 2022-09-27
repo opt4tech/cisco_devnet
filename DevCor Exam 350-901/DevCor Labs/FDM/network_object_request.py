@@ -1,7 +1,6 @@
 from tkinter.tix import Tree
 import requests
 from requests.auth import HTTPBasicAuth
-from auth_token import get_token
 from request_info import NetworkObjectInfo
 from request_info import DeploymentInfo
 import sys
@@ -51,11 +50,12 @@ class FDM_API:
             return api_call.json()
 
     def get_auth_token(self):
-        """ Obtain authentication token and use it in future calls """
+        # Endpoint URL
+        url =  f"{self.base_url}/fmc_platform/v1/auth/generatetoken"
 
-        access_token = get_token(self.username,self.password)
-        self.headers['X-auth-access-token'] = f'{access_token}'
-        print(self.headers)
+        resp = requests.post(url, auth=HTTPBasicAuth(self.username, self.password), verify=False)
+
+        self.headers['X-auth-access-token'] = f"{resp.headers['X-auth-access-token']}"
 
     def deploy (self):
         """
@@ -71,11 +71,10 @@ class FDM_API:
         data = {}
         response = requests.get(url,headers=self.headers,data=data,verify=False)
         response.raise_for_status()
-        print(response.json()['items'])
         for domain in response.json()['items']:
             print(f'Found domain: {domain["name"]}')
             if domain['name'] == environment_info.LAB_FDM['domain']:
-                print(f'Found the correct domain: {domain["name"]}')
+                print(f'GET DOMAIN >> Found the correct domain: {domain["name"]}')
                 self.domainuuid = domain['uuid']
                 return True
         print(f"{environment_info.LAB_FDM['domain']}: Domain not found")
@@ -104,13 +103,17 @@ def main():
     fdm.get_domain_id()
 
     # read and print current network objects
-    fdm_net_objs = fdm.do_api_call("GET", f"fmc_config/v1/domain/{fdm.domainuuid}/object/networks")
-    for net_obj in fdm_net_objs['items']:
-        print(f"Existing {net_obj['name']} object, ID:{net_obj['id']}")
-
-    # Check if object with the same name already exists
-    # if so, delete it first to avoid errors
+    offset = 0
+    url = f"fmc_config/v1/domain/{fdm.domainuuid}/object/networks?offset={offset}"
+    fdm_net_objs = fdm.do_api_call("GET", url)
     obj_id = find_object_by_name (NetworkObjectInfo, fdm_net_objs['items'])
+    while fdm_net_objs['paging']['next'] and not obj_id:
+        print(f"MAIN >> Object not found on page..collecting next page of objects.")
+        offset = offset + 25
+        url = f"fmc_config/v1/domain/{fdm.domainuuid}/object/networks?offset={offset}"
+        fdm_net_objs = fdm.do_api_call("GET", url)
+        obj_id = find_object_by_name (NetworkObjectInfo, fdm_net_objs['items'])
+
     if obj_id:
         print(f"{NetworkObjectInfo['name']} object already exists, deleting...")
         fdm.do_api_call ("DELETE", f"fmc_config/v1/domain/{fdm.domainuuid}/object/networks/{obj_id}")
@@ -121,7 +124,7 @@ def main():
 
     # Configuration changes need to be deployed to be activated
     # Note it will fail in the DevNet sandbox when it's Read-Only
-    fdm.deploy()
+    #fdm.deploy()
 
 if __name__ == "__main__":
     main()
