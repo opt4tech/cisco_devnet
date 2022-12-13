@@ -1,0 +1,24 @@
+interfaces:
+  Ethernet0/0:
+    ipaddr: 10.1.7.51
+    mask: 255.255.255.0
+    description: MANAGEMENT
+    state: up
+  Ethernet0/1:
+    ipaddr: 10.0.0.5
+    mask: 255.255.255.252
+    prefix_length: 30
+    description: INI - connection to rtr-iou-002
+    state: up
+  Ethernet0/2:
+    ipaddr: 10.0.0.1
+    mask: 255.255.255.252
+    prefix_length: 30
+    description: INI - connection to rtr-iou-003
+    state: up
+  Ethernet0/3:
+    ipaddr: 10.0.0.42
+    mask: 255.255.255.252
+    prefix_length: 30
+    description: INI - connection to rtr-csr-001
+    state: up

@@ -1,0 +1,4 @@
+snmp_users:
+- NETOPS
+snmp_groups:
+- DEVICE_GROUP

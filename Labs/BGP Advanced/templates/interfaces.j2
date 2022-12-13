@@ -1,0 +1,26 @@
+{% for interface in interfaces %}
+interface {{ interface }}
+{% if interface[interface]['vrf'] is defined %}
+ vrf forwarding interface[interface]['vrf']
+{% endif %}
+ description {{ interfaces[interface]['description'] }}
+{% if interfaces[interface]['vrf'] is defined and interfaces[interface]['vrf'] != 'global' %}
+ vrf forwarding {{ interfaces[interface]['vrf'] }}
+{% endif %}
+{% if interfaces[interface]['state'] == 'up' and not gather_interface_state[interface] %}
+ no shutdown
+{% endif %}
+{% if interfaces[interface]['netflow'] is defined and interfaces[interface]['netflow'] %}
+ ip flow monitor {{ interfaces[interface]['netflow_monitor'] }} input
+ ip flow monitor {{ interfaces[interface]['netflow_monitor'] }} output
+{% endif %}
+{% if interfaces[interface]['ipaddr'] != 'None' %}
+ ip address {{ interfaces[interface]['ipaddr'] }} {{ interfaces[interface]['mask'] }} 
+{% endif %}
+ no ip redirects
+ no ip proxy-arp
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+{% endfor %}

@@ -1,0 +1,8 @@
+enabled_protocols:
+- none
+enabled_services:
+- netflow
+- snmp
+- dhcp
+version: 16
+location: LAX

@@ -1,0 +1,33 @@
+interfaces:
+  GigabitEthernet1:
+    ipaddr: '10.0.0.45'
+    mask: '255.255.255.252'
+    description: INI - connection to rtr-iou-009
+    state: up
+    netflow: true
+    netflow_monitor: KENTIK-MONITOR
+    vrf: global
+  GigabitEthernet2:
+    ipaddr: 10.1.2.1
+    mask: 255.255.255.0
+    description: UNI - LAX SERVERS
+    state: up
+    netflow: true
+    netflow_monitor: KENTIK-MONITOR
+    vrf: global
+  GigabitEthernet3:
+    ipaddr: None
+    mask: None
+    description: AVAILABLE
+    state: down
+    netflow: false
+    netflow_monitor: None
+    vrf: global
+  GigabitEthernet4:
+    ipaddr: 10.1.7.63
+    mask: 255.255.255.0
+    description: MANAGEMENT
+    state: up
+    netflow: true
+    netflow_monitor: KENTIK-MONITOR
+    vrf: mgmt

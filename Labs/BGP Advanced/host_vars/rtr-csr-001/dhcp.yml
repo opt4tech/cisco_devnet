@@ -1,0 +1,6 @@
+dhcp_pool_name: 'GEG_SERVERS'
+dhcp_network: '10.1.1.0 255.255.255.0'
+dhcp_domain_name: 'lab.local'
+dhcp_default_router: '10.1.1.1'
+dhcp_exclude_address:
+- '10.1.1.1'

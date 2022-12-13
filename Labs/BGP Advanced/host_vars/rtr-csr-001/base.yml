@@ -1,0 +1,10 @@
+enabled_protocols: 
+- None
+enabled_services:
+- netflow
+- snmp
+- dhcp
+version: 16
+location: GEG
+static_routes:
+- ip route vrf mgmt 0.0.0.0 0.0.0.0 GigabitEthernet4 10.1.7.1

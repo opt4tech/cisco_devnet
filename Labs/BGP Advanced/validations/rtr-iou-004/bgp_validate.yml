@@ -1,0 +1,11 @@
+- get_bgp_neighbors:
+    global:
+      router_id: 1.1.1.1
+      peers:
+        _mode: strict
+        10.10.12.2:
+          is_enabled: true
+          is_up: true
+        10.10.13.3:
+          is_enabled: true
+          is_up: true

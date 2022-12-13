@@ -1,0 +1,28 @@
+- get_interfaces_ip:
+    GigabitEthernet1:
+      ipv4:
+        10.0.0.41:
+          prefix_length: 30
+    GigabitEthernet2:
+      ipv4:
+        10.1.1.1:
+          prefix_length: 24
+    GigabitEthernet4:
+      ipv4:
+        10.1.7.62:
+          prefix_length: 24
+        
+- get_interfaces:
+    GigabitEthernet1:
+      description: INI - connection to rtr-iou-001
+      is_enabled: true
+      is_up: true
+    GigabitEthernet2:
+      description: UNI - GEG SERVERS
+      is_enabled: true
+      is_up: true
+    GigabitEthernet4:
+      description: MANAGEMENT
+      is_enabled: true
+      is_up: true
+  

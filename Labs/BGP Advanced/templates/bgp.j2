@@ -1,0 +1,5 @@
+router bgp {{ bgp_asn }}
+ bgp router-id {{ bgp_rid }}
+{% for neighbor in range(bgp_neighbors|length) %}
+ neighbor {{ bgp_neighbors[neighbor]['ipaddr'] }} remote-as {{ bgp_neighbors[neighbor]['remote_asn'] }}
+{% endfor %}

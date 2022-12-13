@@ -1,0 +1,36 @@
+- get_interfaces_ip:
+    Ethernet0/0:
+      ipv4:
+        10.1.7.55:
+          prefix_length: 24
+    Ethernet0/1:
+      ipv4:
+        10.0.0.10:
+          prefix_length: 30
+    Ethernet0/2:
+      ipv4:
+        10.0.0.14:
+          prefix_length: 30
+    Ethernet0/3:
+      ipv4:
+        10.0.0.21:
+          prefix_length: 30
+        
+- get_interfaces:
+    Ethernet0/0:
+      description: MANAGEMENT
+      is_enabled: true
+      is_up: true
+    Ethernet0/1:
+      description: INI - connection to rtr-iou-002
+      is_enabled: true
+      is_up: true
+    Ethernet0/2:
+      description: INI - connection to rtr-iou-003
+      is_enabled: true
+      is_up: true
+    Ethernet0/3:
+      description: INI - connection to rtr-iou-005
+      is_enabled: true
+      is_up: true
+  

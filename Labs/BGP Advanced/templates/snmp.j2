@@ -1,0 +1,32 @@
+{% if version == 15 %}
+ip access-list standard SNMP
+ remark GEG Management Net
+ permit 10.1.7.0 0.0.0.255
+ remark LAX Management Net
+ permit 10.1.17.0 0.0.0.255
+ deny   any
+{% elif version == 16 %}
+ip access-list standard SNMP
+ 10 remark GEG Management Net
+ 10 permit 10.1.7.0 0.0.0.255
+ 20 remark LAX Management Net
+ 20 permit 10.1.17.0 0.0.0.255
+ 30 deny   any
+{% endif %}
+!
+!
+!
+!
+snmp-server group DEVICE_GROUP v3 priv
+snmp-server view DEVICE_VIEW ccitt included
+snmp-server view DEVICE_VIEW iso included
+snmp-server view DEVICE_VIEW mib-2 included
+snmp-server view DEVICE_VIEW system included
+snmp-server view DEVICE_VIEW interfaces included
+snmp-server view DEVICE_VIEW cisco included
+snmp-server location {{ location }}
+snmp-server contact NETOPS
+{% if user_exists is not defined and intended_config is not defined %}
+snmp-server user NETOPS SNMP_GROUP v3 auth sha password priv aes 128 password
+{% endif %}
+

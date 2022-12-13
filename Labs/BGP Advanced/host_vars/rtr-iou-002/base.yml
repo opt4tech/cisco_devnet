@@ -1,0 +1,5 @@
+enabled_protocols:
+- ospf
+- bgp
+enabled_services:
+- none

@@ -1,0 +1,12 @@
+- name: "BGP CONFIG >> Configure BGP settings"
+  cisco.ios.ios_config:
+    src: bgp.j2
+- name: "BGP CONFIG >> Validate BGP"
+  napalm_validate:
+    provider: "{{ napalm_provider }}"
+    validation_file: ./validations/{{ inventory_hostname }}/bgp_validate.yml
+  register: results
+  until: results['compliance_report']['complies'] is defined
+  retries: 3
+  delay: 5
+  ignore_errors: true

@@ -1,0 +1,32 @@
+flow record CUSTOM-FLOW-RECORD
+ match ipv4 tos
+ match ipv4 protocol
+ match ipv4 source address
+ match ipv4 destination address
+ match transport source-port
+ match transport destination-port
+ match interface input
+ collect routing source as
+ collect routing destination as
+ collect routing next-hop address ipv4
+ collect transport tcp flags
+ collect interface output
+ collect counter bytes
+ collect counter packets
+ collect timestamp sys-uptime first
+ collect timestamp sys-uptime last
+!
+!
+flow exporter KENTIK-EXPORT
+ description KENTIK_PUBLIC_FLOW_INGEST
+ destination 10.1.1.129 vrf mgmt
+ source GigabitEthernet4
+ transport udp 9995
+!
+!
+flow monitor KENTIK-MONITOR
+ exporter KENTIK-EXPORT
+ cache timeout inactive 10
+ cache timeout active 60
+ record CUSTOM-FLOW-RECORD
+!

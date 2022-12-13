@@ -1,0 +1,8 @@
+ospf_enabled: 'true'
+ospf_process: 777
+ospf_rid: 10.1.7.51
+ospf_networks:
+- ipaddr: 10.0.0.5
+  area: 0
+- ipaddr: 10.0.0.1
+  area: 0

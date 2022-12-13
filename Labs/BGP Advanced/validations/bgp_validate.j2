@@ -1,0 +1,10 @@
+- get_bgp_neighbors:
+    global:
+      router_id: {{ bgp_rid }}
+      peers:
+        _mode: strict
+{% for neighbor in bgp_neighbors %}
+        {{ neighbor['ipaddr'] }}:
+          is_enabled: true
+          is_up: true
+{% endfor %}

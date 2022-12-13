@@ -1,0 +1,23 @@
+- name: "INTERFACE CONFIG >> Configure Interface settings"
+  cisco.ios.ios_config: 
+    src: interfaces.j2
+  register: configured_commands
+- debug:
+    var: configured_commands
+- name: "INTERFACE CONFIG >> Validate interfaces"
+  napalm_validate:
+    provider: "{{ napalm_provider }}"
+    validation_file: ./validations/{{ inventory_hostname }}/interfaces_validate.yml
+  register: results
+  until: results['compliance_report']['complies'] is defined and results['compliance_report']['complies']
+  retries: 1
+  delay: 10
+  ignore_errors: true
+#- name: "INTERFACE CONFIG >> Validate BGP Neighbor Reachability"
+#  cisco.ios.ios_ping:
+#    dest: "{{ neighbor_ip['ipaddr'] }}"
+#  loop: "{{ neighbors }}"
+#  loop_control:
+#    loop_var: neighbor_ip
+#  retries: 3
+#  delay: 5

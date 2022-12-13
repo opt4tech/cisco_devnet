@@ -1,0 +1,16 @@
+- get_interfaces_ip:
+{% for interface in interfaces %}
+{% set address = interfaces[interface]['ipaddr']+'/'+interfaces[interface]['mask'] %}
+    {{ interface }}:
+      ipv4:
+        {{ interfaces[interface]['ipaddr'] }}:
+          prefix_length: {{ address | ansible.utils.ipaddr('prefix') }}
+{% endfor %}
+        
+- get_interfaces:
+  {% for interface in interfaces %}
+  {{ interface }}:
+      description: {{ interfaces[interface]['description'] }}
+      is_enabled: true
+      is_up: true
+  {% endfor %}

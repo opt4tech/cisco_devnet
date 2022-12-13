@@ -1,0 +1,52 @@
+---
+- name: "MAIN >> Deploy A BGP Network"
+  hosts: netflow_routers
+  gather_facts: false
+  roles:
+    - ansible-pyats
+  tasks:
+
+    - name: "MAIN >> Ensure Device Directories Exist for Validations"
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/validations/{{ inventory_hostname }}/"
+        state: directory
+    
+    - name: "MAIN >> Build Validation Files"
+      ansible.builtin.template:
+        src: validations/{{ validate_option }}_validate.j2
+        dest: validations/{{ inventory_hostname }}/{{ validate_option }}_validate.yml
+      loop:
+        - interfaces
+        - "{{ 'bgp' if 'bgp' in enabled_protocols }}"
+      loop_control:
+        loop_var: validate_option
+      delegate_to: localhost
+      when : validate_option != ""
+    
+    - name: "MAIN >> Gather IOS Interface Facts"
+      cisco.ios.ios_facts:
+        gather_network_resources:
+        - interfaces
+        
+    - name: "MAIN >> Build Interface State Dictionary"
+      set_fact:
+        gather_interface_state: "{{ gather_interface_state | default({}) | combine ({ item.name : item.enabled })}}"
+      loop: "{{ ansible_network_resources['interfaces'] }}" 
+
+    - name: "MAIN >> Configure and Validate"
+      include_tasks: tasks/{{ config_item }}.yml
+      loop:
+        - base
+        - interfaces
+        - "{{ 'bgp' if 'bgp' in enabled_protocols }}"
+        - "{{ 'ospf' if 'ospf' in enabled_protocols }}"
+        - "{{ 'isis' if 'isis' in enabled_protocols }}"
+        - "{{ 'netflow' if 'netflow' in enabled_services }}"
+        - "{{ 'snmp' if 'snmp' in enabled_services }}"
+      loop_control:
+        loop_var: config_item
+      when : config_item != ""
+    
+    - name: "MAIN >> Save the configuration"
+      cisco.ios.ios_config:
+        save_when: modified

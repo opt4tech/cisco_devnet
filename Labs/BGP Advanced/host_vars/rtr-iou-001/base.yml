@@ -1,0 +1,5 @@
+enabled_protocols:
+- ospf
+enabled_services:
+- none
+version: 15

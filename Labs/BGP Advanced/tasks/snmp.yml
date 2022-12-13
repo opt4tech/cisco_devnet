@@ -1,0 +1,75 @@
+- name: "SNMP CONFIG >> Gather V3 Users"
+  ansible.utils.cli_parse:
+    command: "show snmp user"
+    parser:
+      name: ansible.netcommon.ntc_templates
+    set_fact: show_snmp_users
+  register: results
+  retries: 1
+  delay: 5
+  ignore_errors: true
+
+- name: "SNMP CONFIG >> Remove unwanted v3 users"
+  cisco.ios.ios_config:
+    lines: 
+    - no snmp-server user {{ item.user_name }} {{ item.group_name }} v3 
+  loop: "{{ show_snmp_users }}"
+  when: show_snmp_users is defined and item.user_name not in snmp_users
+
+- name: "SNMP CONFIG >> Verify that the SNMP User is configured"
+  set_fact:
+    user_exists: true
+  loop: "{{ show_snmp_users }}"
+  when: show_snmp_users is defined and item.user_name in snmp_users
+
+- name: "SNMP CONFIG >> Gather v1 and V2 Users"
+  cisco.ios.ios_command:
+    commands: show run | in snmp-server user
+  register: show_run_snmp_user
+  retries: 1
+  delay: 5
+  ignore_errors: true
+
+- name: "SNMP CONFIG >> Remove unwanted v1 and v2 users"
+  cisco.ios.ios_config:
+    lines: 
+    - no {{ item }}
+  loop: "{{ show_run_snmp_user.stdout_lines[0] }}"
+  when: show_run_snmp_user is defined and item != ""
+
+- name: "SNMP CONFIG >> Gather the snmp groups"
+  ansible.utils.cli_parse:
+    command: "show snmp group"
+    parser:
+      name: ansible.netcommon.ntc_templates
+    set_fact: show_snmp_group
+  register: results
+  retries: 1
+  delay: 5
+  ignore_errors: true
+
+- name: "SNMP CONFIG >> Remove unwanted groups"
+  cisco.ios.ios_config:
+    lines: 
+    - no snmp-server group {{ item.groupname }} {{ item.security_model }} 
+  loop: "{{ show_snmp_group }}"
+  when: show_snmp_group is defined and item.groupname not in snmp_groups
+
+- name: "SNMP CONFIG >> Configure SNMP settings"
+  cisco.ios.ios_config:
+    src: snmp.j2
+  register: configured_commands
+
+- debug:
+    var: configured_commands
+  
+- name: "SNMP CONFIG >> Validate SNMP"
+  ansible.utils.cli_parse:
+    command: "show snmp user"
+    parser:
+      name: ansible.netcommon.ntc_templates
+    set_fact: show_snmp_users
+  register: results
+  retries: 3
+  delay: 5
+  ignore_errors: true

@@ -1,0 +1,4 @@
+enabled_protocols:
+- bgp
+enabled_services:
+- none

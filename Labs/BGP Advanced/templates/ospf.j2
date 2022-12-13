@@ -1,0 +1,5 @@
+router ospf {{ ospf_process }}
+ router-id {{ ospf_rid }}
+{% for network in range(ospf_networks|length) %}
+ network {{ ospf_networks[network]['ipaddr'] }} 0.0.0.0 area {{ ospf_networks[network]['area'] }}
+{% endfor %}

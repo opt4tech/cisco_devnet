@@ -1,0 +1,6 @@
+- name: "NEFLOW CONFIG >> Configure Netflow settings"
+  cisco.ios.ios_config: 
+    src: netflow.j2
+  register: configured_commands
+- debug:
+    var: configured_commands

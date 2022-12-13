@@ -1,0 +1,6 @@
+- name: "BASE CONFIG >> Configure Base settings"
+  cisco.ios.ios_config: 
+    src: base.j2
+  register: configured_commands
+- debug:
+    var: configured_commands

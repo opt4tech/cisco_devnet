@@ -1,0 +1,63 @@
+(ntc) ntc@ntc-training:exercise2-ansible$ ansible-playbook pb_configure_network.yml 
+
+PLAY [MAIN >> Deploy A BGP Network] **************************************************************************************************************************************************************
+
+TASK [MAIN >> Build Validation Files] ************************************************************************************************************************************************************
+ok: [csr1 -> localhost] => (item=interfaces)
+ok: [csr3 -> localhost] => (item=interfaces)
+ok: [csr2 -> localhost] => (item=interfaces)
+ok: [csr1 -> localhost] => (item=bgp)
+ok: [csr2 -> localhost] => (item=bgp)
+ok: [csr3 -> localhost] => (item=bgp)
+
+TASK [MAIN >> Configure and Validate] ************************************************************************************************************************************************************
+included: /home/ntc/challenge/exercise2-ansible/tasks/interfaces.yml for csr1, csr2, csr3 => (item=interfaces)
+included: /home/ntc/challenge/exercise2-ansible/tasks/bgp.yml for csr1, csr2, csr3 => (item=bgp)
+
+TASK [INTERFACE CONFIG >> Configure Interface settings] ******************************************************************************************************************************************
+[WARNING]: To ensure idempotency and correct diff the input configuration lines should be similar to how they appear if present in the running configuration on device including the indentation
+changed: [csr2]
+changed: [csr3]
+changed: [csr1]
+
+TASK [INTERFACE CONFIG >> Validate interfaces] ***************************************************************************************************************************************************
+FAILED - RETRYING: [csr3]: INTERFACE CONFIG >> Validate interfaces (3 retries left).
+FAILED - RETRYING: [csr2]: INTERFACE CONFIG >> Validate interfaces (3 retries left).
+FAILED - RETRYING: [csr1]: INTERFACE CONFIG >> Validate interfaces (3 retries left).
+ok: [csr3]
+ok: [csr2]
+ok: [csr1]
+
+TASK [INTERFACE CONFIG >> Validate BGP Neighbor Reachability] ************************************************************************************************************************************
+ok: [csr2] => (item={'ipaddr': '10.10.12.1', 'remote_asn': 65511})
+ok: [csr1] => (item={'ipaddr': '10.10.12.2', 'remote_asn': 65512})
+ok: [csr3] => (item={'ipaddr': '10.10.13.1', 'remote_asn': 65511})
+ok: [csr1] => (item={'ipaddr': '10.10.13.3', 'remote_asn': 65513})
+ok: [csr2] => (item={'ipaddr': '10.10.23.3', 'remote_asn': 65513})
+ok: [csr3] => (item={'ipaddr': '10.10.23.2', 'remote_asn': 65512})
+
+TASK [BGP CONFIG >> Configure BGP settings] ******************************************************************************************************************************************************
+changed: [csr1]
+changed: [csr2]
+changed: [csr3]
+
+TASK [BGP CONFIG >> Validate BGP] ****************************************************************************************************************************************************************
+FAILED - RETRYING: [csr1]: BGP CONFIG >> Validate BGP (3 retries left).
+FAILED - RETRYING: [csr3]: BGP CONFIG >> Validate BGP (3 retries left).
+FAILED - RETRYING: [csr2]: BGP CONFIG >> Validate BGP (3 retries left).
+FAILED - RETRYING: [csr1]: BGP CONFIG >> Validate BGP (2 retries left).
+FAILED - RETRYING: [csr3]: BGP CONFIG >> Validate BGP (2 retries left).
+FAILED - RETRYING: [csr2]: BGP CONFIG >> Validate BGP (2 retries left).
+ok: [csr3]
+ok: [csr1]
+ok: [csr2]
+
+TASK [MAIN >> Save the configuration] ************************************************************************************************************************************************************
+changed: [csr1]
+changed: [csr2]
+changed: [csr3]
+
+PLAY RECAP ***************************************************************************************************************************************************************************************
+csr1                       : ok=9    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+csr2                       : ok=9    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+csr3                       : ok=9    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0 

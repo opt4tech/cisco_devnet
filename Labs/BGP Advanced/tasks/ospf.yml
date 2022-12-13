@@ -1,0 +1,10 @@
+- name: "OSPF CONFIG >> Configure OSPF settings"
+  cisco.ios.ios_config:
+    src: ospf.j2
+- name: "OSPF CONFIG >> Validate OSPF"
+  pyats_parse_command:
+    command: show ip ospf neighbor
+  register: results
+  retries: 3
+  delay: 5
+  ignore_errors: true

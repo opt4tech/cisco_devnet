@@ -1,0 +1,66 @@
+---
+- name: "MAIN >> Deploy A BGP Network"
+  hosts: netflow_routers
+  gather_facts: false
+  roles:
+    - ansible-pyats
+  vars:
+    intended_config: True
+  tasks:
+    - name: "MAIN >> Gather IOS Interface Facts"
+      cisco.ios.ios_facts:
+        gather_network_resources:
+        - interfaces
+
+    - name: "MAIN >> Build Interface State Dictionary"
+      set_fact:
+        gather_interface_state: "{{ gather_interface_state | default({}) | combine ({ item.name : item.enabled })}}"
+      loop: "{{ ansible_network_resources['interfaces'] }}" 
+      
+    - name: "MAIN >> Gather Version Information"
+      ansible.utils.cli_parse:
+        command: "show version"
+        parser:
+          name: ansible.netcommon.ntc_templates
+        set_fact: show_version
+      register: results
+      retries: 1
+      delay: 5
+      ignore_errors: true
+    #- debug:
+    #    var: show_version
+    - name: "MAIN >> Gather Crypto Info"
+      cisco.ios.ios_command:
+        commands: show run | section crypto pki
+      register: show_run_crypto
+      retries: 1
+      delay: 5
+      ignore_errors: true
+    #- debug:
+    #    var: show_run_crypto
+    - name: "MAIN >> Gather User Info"
+      cisco.ios.ios_command:
+        commands: show run | include username
+      register: show_run_users
+      retries: 1
+      delay: 5
+      ignore_errors: true
+
+    - name: "MAIN >> BUILD CONFIG"
+      ansible.builtin.template:
+        src: base.j2
+        dest: ./intended/{{inventory_hostname}}.cfg
+
+    - name: "MAIN >> Record Config file path"
+      set_fact:
+        intended_config_path: ./intended/{{inventory_hostname}}.cfg
+
+    - name: "VALIDATE >> COMPARE RUNNING CONFIG WITH INTENDED"
+      cisco.ios.ios_config:
+        diff_against: intended
+        intended_config: "{{ lookup('file', intended_config_path) }}"
+        diff_ignore_lines:
+          - version .* 
+      diff: true
+      
+

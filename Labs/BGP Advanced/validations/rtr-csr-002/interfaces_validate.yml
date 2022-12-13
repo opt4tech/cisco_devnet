@@ -1,0 +1,28 @@
+- get_interfaces_ip:
+    GigabitEthernet1:
+      ipv4:
+        10.0.0.45:
+          prefix_length: 30
+    GigabitEthernet2:
+      ipv4:
+        10.1.2.1:
+          prefix_length: 24
+    GigabitEthernet4:
+      ipv4:
+        10.1.7.63:
+          prefix_length: 24
+        
+- get_interfaces:
+    GigabitEthernet1:
+      description: INI - connection to rtr-iou-009
+      is_enabled: true
+      is_up: true
+    GigabitEthernet2:
+      description: UNI - LAX SERVERS
+      is_enabled: true
+      is_up: true
+    GigabitEthernet4:
+      description: MANAGEMENT
+      is_enabled: true
+      is_up: true
+  
